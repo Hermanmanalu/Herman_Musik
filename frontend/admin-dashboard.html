@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Herman Musik</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, Arial, sans-serif; }
+    body { margin:0; background:#f4f7fb; color:#1f2937; }
+    * { box-sizing:border-box; }
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { width:260px; background:#111827; color:#fff; padding:24px; }
+    .sidebar h2 { margin:0 0 20px; font-size:1.2rem; }
+    .sidebar button, .sidebar a { display:block; width:100%; padding:10px 12px; margin:8px 0; text-align:left; border:0; border-radius:8px; background:transparent; color:#fff; cursor:pointer; text-decoration:none; }
+    .sidebar button.active, .sidebar a.active, .sidebar button:hover, .sidebar a:hover { background:#1f2937; }
+    .main { flex:1; padding:24px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:20px; }
+    .card { background:#fff; border-radius:12px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,0.06); }
+    .card h3 { margin:0 0 8px; font-size:0.95rem; color:#6b7280; }
+    .card .value { font-size:1.5rem; font-weight:700; }
+    .panel { background:#fff; border-radius:12px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,0.06); margin-bottom:20px; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { padding:10px; text-align:left; border-bottom:1px solid #e5e7eb; font-size:0.95rem; }
+    .btn { background:#2563eb; color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .btn.secondary { background:#6b7280; }
+    .btn.danger { background:#dc2626; }
+    .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+    input, textarea, select { width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px; }
+    .hidden { display:none; }
+    .status-pill { display:inline-block; padding:4px 8px; border-radius:999px; font-size:0.8rem; background:#e5e7eb; color:#374151; }
+    .status-pill.pending { background:#fef3c7; color:#92400e; }
+    .status-pill.approved { background:#dcfce7; color:#166534; }
+    .status-pill.done { background:#dbeafe; color:#1d4ed8; }
+    .status-pill.cancelled { background:#fee2e2; color:#991b1b; }
+    .section-title { display:flex; justify-content:space-between; align-items:center; }
+    .inline { display:flex; gap:8px; flex-wrap:wrap; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+    .gallery-item { border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; background:#fff; }
+    .gallery-item img { width:100%; height:140px; object-fit:cover; }
+    .gallery-item .body { padding:10px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Herman Musik</h2>
+      <button class="nav-btn active" data-target="dashboard">Dashboard</button>
+      <button class="nav-btn" data-target="bookings">Booking</button>
+      <button class="nav-btn" data-target="paket">Paket Rental</button>
+      <button class="nav-btn" data-target="galeri">Galeri</button>
+      <button class="nav-btn" data-target="customer">Customer</button>
+      <button class="nav-btn" data-target="laporan">Laporan</button>
+      <button id="logout-btn" type="button">Logout</button>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Dashboard Admin</h1>
+          <p>Kelola booking, paket, galeri, customer, dan laporan rental.</p>
+        </div>
+        <div id="admin-name">Admin</div>
+      </div>
+
+      <section id="dashboard" class="section">
+        <div class="cards">
+          <div class="card"><h3>Total Booking</h3><div class="value" id="total-booking">0</div></div>
+          <div class="card"><h3>Booking Hari Ini</h3><div class="value" id="booking-today">0</div></div>
+          <div class="card"><h3>Booking Pending</h3><div class="value" id="pending">0</div></div>
+          <div class="card"><h3>Booking Disetujui</h3><div class="value" id="approved">0</div></div>
+          <div class="card"><h3>Total Customer</h3><div class="value" id="total-customer">0</div></div>
+          <div class="card"><h3>Total Paket</h3><div class="value" id="total-paket">0</div></div>
+          <div class="card"><h3>Pendapatan Bulan Ini</h3><div class="value" id="pendapatan">0</div></div>
+        </div>
+      </section>
+
+      <section id="bookings" class="section hidden">
+        <div class="panel">
+          <div class="section-title"><h2>Manajemen Booking</h2></div>
+          <table>
+            <thead><tr><th>ID</th><th>Nama</th><th>WhatsApp</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="booking-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="paket" class="section hidden">
+        <div class="panel">
+          <div class="section-title"><h2>Kelola Paket Rental</h2><button class="btn" onclick="showPaketForm()">Tambah Paket</button></div>
+          <div id="paket-form" class="hidden">
+            <h3 id="paket-form-title">Tambah Paket</h3>
+            <div class="form-grid">
+              <div><label>Nama Paket</label><input id="paket-nama" /></div>
+              <div><label>Harga</label><input id="paket-harga" type="number" /></div>
+              <div><label>Gambar URL</label><input id="paket-gambar" /></div>
+              <div><label>Status Aktif</label><select id="paket-aktif"><option value="1">Aktif</option><option value="0">Nonaktif</option></select></div>
+            </div>
+            <div style="margin-top:10px;"><label>Deskripsi</label><textarea id="paket-deskripsi" rows="3"></textarea></div>
+            <div class="inline" style="margin-top:10px;"><button class="btn" onclick="savePaket()">Simpan</button><button class="btn secondary" onclick="hidePaketForm()">Batal</button></div>
+          </div>
+          <table>
+            <thead><tr><th>Nama</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="paket-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="galeri" class="section hidden">
+        <div class="panel">
+          <div class="section-title"><h2>Kelola Galeri</h2><button class="btn" onclick="showGaleriForm()">Tambah Foto</button></div>
+          <div id="galeri-form" class="hidden">
+            <h3 id="galeri-form-title">Tambah Foto</h3>
+            <div class="form-grid">
+              <div><label>Judul</label><input id="galeri-judul" /></div>
+              <div><label>File Foto</label><input id="galeri-file" type="file" /></div>
+            </div>
+            <div style="margin-top:10px;"><label>Deskripsi</label><textarea id="galeri-deskripsi" rows="3"></textarea></div>
+            <div class="inline" style="margin-top:10px;"><button class="btn" onclick="saveGaleri()">Simpan</button><button class="btn secondary" onclick="hideGaleriForm()">Batal</button></div>
+          </div>
+          <div id="gallery-list" class="gallery-grid"></div>
+        </div>
+      </section>
+
+      <section id="customer" class="section hidden">
+        <div class="panel">
+          <div class="section-title"><h2>Customer</h2></div>
+          <table>
+            <thead><tr><th>Nama</th><th>Email</th><th>Nomor HP</th><th>Jumlah Booking</th></tr></thead>
+            <tbody id="customer-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="laporan" class="section hidden">
+        <div class="panel">
+          <div class="section-title"><h2>Laporan</h2><div class="inline"><button class="btn" onclick="alert('Export PDF belum terhubung')">Export PDF</button><button class="btn secondary" onclick="alert('Export Excel belum terhubung')">Export Excel</button></div></div>
+          <p id="report-summary"></p>
+          <table><thead><tr><th>Bulan</th><th>Jumlah Booking</th></tr></thead><tbody id="report-table-body"></tbody></table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_URL = '/api';
+    let token = localStorage.getItem('auth_token');
+    let activePaketId = null;
+    let activeGaleriId = null;
+
+    function getToken() { return localStorage.getItem('auth_token'); }
+
+    async function verifyToken() {
+      const token = getToken();
+      if (!token) { window.location.href='/admin'; return; }
+      try {
+        const response = await fetch(`${API_URL}/verify-token`, { method:'GET', headers:{ Authorization:`Bearer ${token}` } });
+        if (!response.ok) {
+          localStorage.removeItem('auth_token'); localStorage.removeItem('user_role'); localStorage.removeItem('username'); window.location.href='/admin';
+          return;
+        }
+        const data = await response.json();
+        document.getElementById('admin-name').textContent = data.username || 'Admin';
+        loadDashboard();
+      } catch (error) {
+        console.error(error); window.location.href='/admin';
+      }
+    }
+
+    async function loadDashboard() {
+      await Promise.all([loadStats(), loadBookings(), loadPaket(), loadCustomers(), loadReports(), loadGaleri()]);
+    }
+
+    async function loadStats() {
+      const response = await fetch(`${API_URL}/admin/stats`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      if (!response.ok) return;
+      const stats = result.stats || {};
+      document.getElementById('total-booking').textContent = stats.total_booking ?? 0;
+      document.getElementById('booking-today').textContent = stats.booking_today ?? 0;
+      document.getElementById('pending').textContent = stats.pending ?? 0;
+      document.getElementById('approved').textContent = stats.approved ?? 0;
+      document.getElementById('total-customer').textContent = stats.total_customer ?? 0;
+      document.getElementById('total-paket').textContent = stats.total_paket ?? 0;
+      document.getElementById('pendapatan').textContent = new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(stats.pendapatan_bulan_ini || 0);
+    }
+
+    async function loadBookings() {
+      const response = await fetch(`${API_URL}/admin/bookings`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      if (!response.ok) return;
+      const body = document.getElementById('booking-table-body');
+      body.innerHTML = '';
+      (result.bookings || []).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.id}</td><td>${item.nama}</td><td>${item.no_wa}</td><td>${item.tanggal_acara || '-'}</td><td><span class="status-pill ${getStatusClass(item.status)}">${item.status || 'baru'}</span></td><td><div class="inline"><button class="btn" onclick="updateBookingStatus(${item.id}, 'diproses')">Approve</button><button class="btn secondary" onclick="updateBookingStatus(${item.id}, 'batal')">Reject</button><button class="btn" onclick="updateBookingStatus(${item.id}, 'selesai')">Selesai</button><button class="btn danger" onclick="deleteBooking(${item.id})">Hapus</button></div></td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    async function updateBookingStatus(id, status) {
+      const response = await fetch(`${API_URL}/admin/bookings/${id}/status`, { method:'PUT', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${getToken()}` }, body: JSON.stringify({ status }) });
+      const result = await response.json();
+      alert(result.message || 'Status diperbarui');
+      loadBookings();
+    }
+
+    async function deleteBooking(id) {
+      if (!confirm('Hapus booking ini?')) return;
+      const response = await fetch(`${API_URL}/admin/bookings/${id}`, { method:'DELETE', headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      alert(result.message || 'Booking dihapus');
+      loadBookings();
+    }
+
+    async function loadPaket() {
+      const response = await fetch(`${API_URL}/admin/paket`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      if (!response.ok) return;
+      const body = document.getElementById('paket-table-body');
+      body.innerHTML = '';
+      (result.paket || []).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.nama}</td><td>${new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(item.harga || 0)}</td><td>${item.aktif == 1 ? 'Aktif' : 'Nonaktif'}</td><td><div class="inline"><button class="btn" onclick="editPaket(${item.id})">Edit</button><button class="btn danger" onclick="deletePaket(${item.id})">Hapus</button></div></td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    function showPaketForm() {
+      activePaketId = null;
+      document.getElementById('paket-form-title').textContent = 'Tambah Paket';
+      document.getElementById('paket-form').classList.remove('hidden');
+      document.getElementById('paket-nama').value = '';
+      document.getElementById('paket-harga').value = '';
+      document.getElementById('paket-gambar').value = '';
+      document.getElementById('paket-deskripsi').value = '';
+      document.getElementById('paket-aktif').value = '1';
+    }
+
+    function hidePaketForm() { document.getElementById('paket-form').classList.add('hidden'); }
+
+    async function savePaket() {
+      const payload = { nama: document.getElementById('paket-nama').value, harga: Number(document.getElementById('paket-harga').value), deskripsi: document.getElementById('paket-deskripsi').value, gambar_url: document.getElementById('paket-gambar').value, aktif: document.getElementById('paket-aktif').value };
+      const url = activePaketId ? `${API_URL}/admin/paket/${activePaketId}` : `${API_URL}/admin/paket`;
+      const method = activePaketId ? 'PUT' : 'POST';
+      const response = await fetch(url, { method, headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${getToken()}` }, body: JSON.stringify(payload) });
+      const result = await response.json();
+      alert(result.message || 'Paket disimpan');
+      hidePaketForm();
+      loadPaket();
+    }
+
+    async function editPaket(id) {
+      const response = await fetch(`${API_URL}/admin/paket`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      const item = (result.paket || []).find(x => x.id === id);
+      if (!item) return;
+      activePaketId = id;
+      document.getElementById('paket-form-title').textContent = 'Edit Paket';
+      document.getElementById('paket-form').classList.remove('hidden');
+      document.getElementById('paket-nama').value = item.nama || '';
+      document.getElementById('paket-harga').value = item.harga || '';
+      document.getElementById('paket-gambar').value = item.gambar_url || '';
+      document.getElementById('paket-deskripsi').value = item.deskripsi || '';
+      document.getElementById('paket-aktif').value = item.aktif == 1 ? '1' : '0';
+    }
+
+    async function deletePaket(id) {
+      if (!confirm('Hapus paket ini?')) return;
+      const response = await fetch(`${API_URL}/admin/paket/${id}`, { method:'DELETE', headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      alert(result.message || 'Paket dihapus');
+      loadPaket();
+    }
+
+    async function loadCustomers() {
+      const response = await fetch(`${API_URL}/admin/customers`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      if (!response.ok) return;
+      const body = document.getElementById('customer-table-body');
+      body.innerHTML = '';
+      (result.customers || []).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.name || '-'}</td><td>${item.email || '-'}</td><td>${item.phone || '-'}</td><td>${item.total_booking || 0}</td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    async function loadReports() {
+      const response = await fetch(`${API_URL}/admin/reports`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      if (!response.ok) return;
+      const report = result.reports || {};
+      document.getElementById('report-summary').textContent = `Total pendapatan: ${new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(report.total_revenue || 0)} | Paket terlaris: ${report.top_package ? report.top_package.nama : '-'}`;
+      const body = document.getElementById('report-table-body');
+      body.innerHTML = '';
+      (report.monthly_bookings || []).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.month}</td><td>${item.count}</td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    async function loadGaleri() {
+      const response = await fetch(`${API_URL}/admin/galeri`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      if (!response.ok) return;
+      const list = document.getElementById('gallery-list');
+      list.innerHTML = '';
+      (result.galeri || []).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = `<img src="${item.gambar_url || ''}" alt="${item.judul || ''}" /><div class="body"><strong>${item.judul || ''}</strong><p>${item.deskripsi || ''}</p><div class="inline"><button class="btn" onclick="editGaleri(${item.id})">Edit</button><button class="btn danger" onclick="deleteGaleri(${item.id})">Hapus</button></div></div>`;
+        list.appendChild(div);
+      });
+    }
+
+    function showGaleriForm() {
+      activeGaleriId = null;
+      document.getElementById('galeri-form-title').textContent = 'Tambah Foto';
+      document.getElementById('galeri-form').classList.remove('hidden');
+      document.getElementById('galeri-judul').value = '';
+      document.getElementById('galeri-deskripsi').value = '';
+      document.getElementById('galeri-file').value = '';
+    }
+
+    function hideGaleriForm() { document.getElementById('galeri-form').classList.add('hidden'); }
+
+    async function saveGaleri() {
+      const formData = new FormData();
+      formData.append('judul', document.getElementById('galeri-judul').value);
+      formData.append('deskripsi', document.getElementById('galeri-deskripsi').value);
+      const fileInput = document.getElementById('galeri-file');
+      if (fileInput.files[0]) formData.append('file', fileInput.files[0]);
+      const url = activeGaleriId ? `${API_URL}/admin/galeri/${activeGaleriId}` : `${API_URL}/admin/galeri`;
+      const method = activeGaleriId ? 'PUT' : 'POST';
+      const response = await fetch(url, { method, headers:{ Authorization:`Bearer ${getToken()}` }, body: formData });
+      const result = await response.json();
+      alert(result.message || 'Foto disimpan');
+      hideGaleriForm();
+      loadGaleri();
+    }
+
+    async function editGaleri(id) {
+      const response = await fetch(`${API_URL}/admin/galeri`, { headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      const item = (result.galeri || []).find(x => x.id === id);
+      if (!item) return;
+      activeGaleriId = id;
+      document.getElementById('galeri-form-title').textContent = 'Edit Foto';
+      document.getElementById('galeri-form').classList.remove('hidden');
+      document.getElementById('galeri-judul').value = item.judul || '';
+      document.getElementById('galeri-deskripsi').value = item.deskripsi || '';
+      document.getElementById('galeri-file').value = '';
+    }
+
+    async function deleteGaleri(id) {
+      if (!confirm('Hapus foto ini?')) return;
+      const response = await fetch(`${API_URL}/admin/galeri/${id}`, { method:'DELETE', headers:{ Authorization:`Bearer ${getToken()}` } });
+      const result = await response.json();
+      alert(result.message || 'Foto dihapus');
+      loadGaleri();
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.remove('hidden');
+    }));
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      const token = getToken();
+      if (token) { try { await fetch(`${API_URL}/logout`, { method:'POST', headers:{ Authorization:`Bearer ${token}` } }); } catch (e) {} }
+      localStorage.removeItem('auth_token'); localStorage.removeItem('user_role'); localStorage.removeItem('username'); window.location.href='/admin';
+    });
+
+    function getStatusClass(status) {
+      if (status === 'selesai') return 'done';
+      if (status === 'diproses') return 'approved';
+      if (status === 'batal') return 'cancelled';
+      return 'pending';
+    }
+
+    window.addEventListener('DOMContentLoaded', verifyToken);
+  </script>
+</body>
+</html>

@@ -10,14 +10,18 @@ from datetime import datetime, timedelta
 import jwt
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import re
 
 load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
+UPLOAD_FOLDER = os.path.join(FRONTEND_DIR, "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 CORS(app)  # Izinkan request dari frontend
 
 # ===== KONFIGURASI =====
@@ -32,6 +36,32 @@ def get_db():
         password=os.getenv("DB_PASSWORD", ""),
         database=os.getenv("DB_NAME", "herman_musik")
     )
+
+
+def ensure_db_schema():
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS galeri (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                judul VARCHAR(150) NOT NULL,
+                deskripsi TEXT DEFAULT '',
+                gambar_url VARCHAR(500) NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB
+        """)
+        cursor.execute("ALTER TABLE paket ADD COLUMN IF NOT EXISTS deskripsi TEXT DEFAULT ''")
+        cursor.execute("ALTER TABLE paket ADD COLUMN IF NOT EXISTS gambar_url VARCHAR(500) DEFAULT ''")
+        cursor.execute("ALTER TABLE paket ADD COLUMN IF NOT EXISTS aktif TINYINT(1) DEFAULT 1")
+        db.commit()
+        cursor.close()
+        db.close()
+    except Exception:
+        pass
+
+
+ensure_db_schema()
 
 
 # ===== HELPER: VALIDASI TOKEN & EKSTRAK USER INFO =====
@@ -106,14 +136,20 @@ def is_strong_password(password):
 
 
 # ===== FRONTEND ROUTES =====
+
 @app.route("/", methods=["GET"])
-def index():
+def home():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
 
-@app.route("/login", methods=["GET"])
-def login_page():
+@app.route("/admin", methods=["GET"])
+def admin_login_page():
     return send_from_directory(FRONTEND_DIR, "login.html")
+
+
+@app.route("/admin/dashboard", methods=["GET"])
+def admin_dashboard_page():
+    return send_from_directory(FRONTEND_DIR, "admin-dashboard.html")
 
 
 @app.route("/favicon.ico")
@@ -121,10 +157,340 @@ def favicon():
     return "", 204
 
 
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+
 # ===== ENDPOINT: HEALTH CHECK =====
 @app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "message": "Herman Musik API aktif"})
+
+
+@app.route("/api/booking-status/<int:booking_id>", methods=["GET"])
+def booking_status(booking_id):
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT id, nama, no_wa, status, tanggal_acara, dibuat_pada FROM permintaan WHERE id = %s", (booking_id,))
+        row = cursor.fetchone()
+        cursor.close()
+        db.close()
+        if not row:
+            return jsonify({"error": "Booking tidak ditemukan"}), 404
+        return jsonify({"success": True, "booking": row})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/stats", methods=["GET"])
+@admin_required
+def admin_stats():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT COUNT(*) AS total_booking FROM permintaan")
+        total_booking = cursor.fetchone()["total_booking"]
+        cursor.execute("SELECT COUNT(*) AS booking_today FROM permintaan WHERE DATE(dibuat_pada) = CURDATE()")
+        booking_today = cursor.fetchone()["booking_today"]
+        cursor.execute("SELECT COUNT(*) AS pending FROM permintaan WHERE status = 'baru'")
+        pending = cursor.fetchone()["pending"]
+        cursor.execute("SELECT COUNT(*) AS approved FROM permintaan WHERE status IN ('diproses', 'selesai')")
+        approved = cursor.fetchone()["approved"]
+        cursor.execute("SELECT COUNT(*) AS total_customer FROM permintaan")
+        total_customer = cursor.fetchone()["total_customer"]
+        cursor.execute("SELECT COUNT(*) AS total_paket FROM paket")
+        total_paket = cursor.fetchone()["total_paket"]
+        cursor.execute("SELECT COALESCE(SUM(harga), 0) AS total_revenue FROM paket")
+        total_revenue = cursor.fetchone()["total_revenue"]
+        cursor.close()
+        db.close()
+        return jsonify({
+            "success": True,
+            "stats": {
+                "total_booking": total_booking,
+                "booking_today": booking_today,
+                "pending": pending,
+                "approved": approved,
+                "total_customer": total_customer,
+                "total_paket": total_paket,
+                "pendapatan_bulan_ini": total_revenue
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/bookings", methods=["GET"])
+@admin_required
+def admin_bookings():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM permintaan ORDER BY dibuat_pada DESC")
+        rows = cursor.fetchall()
+        for row in rows:
+            row["dibuat_pada"] = str(row.get("dibuat_pada") or "")
+            row["tanggal_acara"] = str(row.get("tanggal_acara") or "")
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "bookings": rows})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/bookings/<int:booking_id>/status", methods=["PUT"])
+@admin_required
+def admin_update_booking_status(booking_id):
+    data = request.get_json(silent=True) or {}
+    status = (data.get("status") or "").strip()
+    allowed = {"baru", "diproses", "selesai", "batal"}
+    if status not in allowed:
+        return jsonify({"error": "Status tidak valid"}), 400
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("UPDATE permintaan SET status = %s WHERE id = %s", (status, booking_id))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Status booking diperbarui"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/bookings/<int:booking_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_booking(booking_id):
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM permintaan WHERE id = %s", (booking_id,))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Booking dihapus"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/paket", methods=["GET"])
+@admin_required
+def admin_get_paket():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM paket ORDER BY id DESC")
+        rows = cursor.fetchall()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "paket": rows})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/paket", methods=["POST"])
+@admin_required
+def admin_create_paket():
+    data = request.get_json(silent=True) or {}
+    nama = (data.get("nama") or "").strip()
+    harga = data.get("harga", 0)
+    deskripsi = (data.get("deskripsi") or "").strip()
+    gambar_url = (data.get("gambar_url") or "").strip()
+    aktif = 1 if str(data.get("aktif", 1)).lower() not in {"0", "false", "no"} else 0
+    if not nama:
+        return jsonify({"error": "Nama paket wajib diisi"}), 400
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "INSERT INTO paket (nama, harga, deskripsi, gambar_url, aktif) VALUES (%s, %s, %s, %s, %s)",
+            (nama, harga, deskripsi, gambar_url, aktif),
+        )
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Paket ditambahkan"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/paket/<int:paket_id>", methods=["PUT"])
+@admin_required
+def admin_update_paket(paket_id):
+    data = request.get_json(silent=True) or {}
+    nama = (data.get("nama") or "").strip()
+    harga = data.get("harga", 0)
+    deskripsi = (data.get("deskripsi") or "").strip()
+    gambar_url = (data.get("gambar_url") or "").strip()
+    aktif = 1 if str(data.get("aktif", 1)).lower() not in {"0", "false", "no"} else 0
+    if not nama:
+        return jsonify({"error": "Nama paket wajib diisi"}), 400
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "UPDATE paket SET nama = %s, harga = %s, deskripsi = %s, gambar_url = %s, aktif = %s WHERE id = %s",
+            (nama, harga, deskripsi, gambar_url, aktif, paket_id),
+        )
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Paket diperbarui"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/paket/<int:paket_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_paket(paket_id):
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM paket WHERE id = %s", (paket_id,))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Paket dihapus"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/customers", methods=["GET"])
+@admin_required
+def admin_customers():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT nama AS name, '' AS email, no_wa AS phone, COUNT(*) AS total_booking FROM permintaan GROUP BY nama, no_wa ORDER BY total_booking DESC")
+        rows = cursor.fetchall()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "customers": rows})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/reports", methods=["GET"])
+@admin_required
+def admin_reports():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT COUNT(*) AS total_revenue FROM permintaan")
+        total_revenue = cursor.fetchone()["total_revenue"]
+        cursor.execute("SELECT nama, harga FROM paket WHERE aktif = 1 ORDER BY harga DESC LIMIT 1")
+        top_package = cursor.fetchone()
+        cursor.execute("SELECT DATE_FORMAT(dibuat_pada, '%Y-%m') AS month, COUNT(*) AS count FROM permintaan GROUP BY DATE_FORMAT(dibuat_pada, '%Y-%m') ORDER BY month")
+        monthly = cursor.fetchall()
+        cursor.close()
+        db.close()
+        return jsonify({
+            "success": True,
+            "reports": {
+                "total_revenue": total_revenue,
+                "top_package": top_package,
+                "monthly_bookings": monthly
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/galeri", methods=["GET"])
+@admin_required
+def admin_get_galeri():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM galeri ORDER BY created_at DESC")
+        rows = cursor.fetchall()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "galeri": rows})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/galeri", methods=["POST"])
+@admin_required
+def admin_create_galeri():
+    judul = (request.form.get("judul") or "").strip()
+    deskripsi = (request.form.get("deskripsi") or "").strip()
+    file = request.files.get("file")
+    gambar_url = ""
+    if file and file.filename:
+        filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{secure_filename(file.filename)}"
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        gambar_url = f"/uploads/{filename}"
+    if not judul:
+        return jsonify({"error": "Judul foto wajib diisi"}), 400
+    if not gambar_url:
+        return jsonify({"error": "Foto wajib diunggah"}), 400
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "INSERT INTO galeri (judul, deskripsi, gambar_url) VALUES (%s, %s, %s)",
+            (judul, deskripsi, gambar_url),
+        )
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Foto ditambahkan"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/galeri/<int:galeri_id>", methods=["PUT"])
+@admin_required
+def admin_update_galeri(galeri_id):
+    judul = (request.form.get("judul") or "").strip()
+    deskripsi = (request.form.get("deskripsi") or "").strip()
+    file = request.files.get("file")
+    gambar_url = ""
+    if file and file.filename:
+        filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{secure_filename(file.filename)}"
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        gambar_url = f"/uploads/{filename}"
+    if not judul:
+        return jsonify({"error": "Judul foto wajib diisi"}), 400
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        if gambar_url:
+            cursor.execute("UPDATE galeri SET judul = %s, deskripsi = %s, gambar_url = %s WHERE id = %s", (judul, deskripsi, gambar_url, galeri_id))
+        else:
+            cursor.execute("UPDATE galeri SET judul = %s, deskripsi = %s WHERE id = %s", (judul, deskripsi, galeri_id))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Foto diperbarui"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/admin/galeri/<int:galeri_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_galeri(galeri_id):
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT gambar_url FROM galeri WHERE id = %s", (galeri_id,))
+        row = cursor.fetchone()
+        if row and row.get("gambar_url"):
+            filename = row["gambar_url"].split("/")[-1]
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        cursor.execute("DELETE FROM galeri WHERE id = %s", (galeri_id,))
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"success": True, "message": "Foto dihapus"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ===== ENDPOINT: REGISTER (USER ROLE ONLY) =====

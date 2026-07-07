@@ -61,7 +61,7 @@ function submitForm() {
 
 Mohon informasi lebih lanjut. Terima kasih! 🙏`;
 
-  window.open('https://wa.me/621264026989?text=' + encodeURIComponent(msg), '_blank');
+  window.open('https://wa.me/6281264026989?text=' + encodeURIComponent(msg), '_blank');
   showNotif();
 }
 

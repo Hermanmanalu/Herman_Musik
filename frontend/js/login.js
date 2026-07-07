@@ -1,6 +1,6 @@
 // ===== LOGIN & REGISTER LOGIC =====
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 // DOM Elements
 const loginForm = document.getElementById('login-form');
@@ -83,9 +83,9 @@ loginForm.addEventListener('submit', async (e) => {
 
         // Redirect berdasarkan role
         if (data.role === 'admin') {
-            window.location.href = 'admin-dashboard.html';
+            window.location.href = '/admin/dashboard';
         } else {
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
 
     } catch (error) {
@@ -240,9 +240,9 @@ async function verifyTokenAndRedirect() {
             const data = await response.json();
             // Jika token valid, redirect ke dashboard sesuai role
             if (data.role === 'admin') {
-                window.location.href = 'admin-dashboard.html';
+                window.location.href = '/admin/dashboard';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = '/';
             }
         } else {
             // Token invalid/expired, hapus
