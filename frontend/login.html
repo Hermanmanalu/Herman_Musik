@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Herman Musik</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <!-- Logo / Header -->
+            <div class="login-header">
+                <h1>🎵 Herman Musik</h1>
+                <p>Rental Tenda & Taratak Pesta Pernikahan</p>
+            </div>
+
+            <!-- Nav Tabs: Login / Register -->
+            <div class="login-tabs">
+                <button class="tab-btn active" id="login-tab">Login</button>
+                <button class="tab-btn" id="register-tab">Daftar</button>
+            </div>
+
+            <!-- ===== FORM LOGIN ===== -->
+            <form id="login-form" class="login-tab-content active">
+                <div class="form-group">
+                    <label for="login-username">Username atau Email</label>
+                    <input 
+                        type="text" 
+                        id="login-username" 
+                        name="username_or_email" 
+                        placeholder="Masukkan username atau email" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input 
+                        type="password" 
+                        id="login-password" 
+                        name="password" 
+                        placeholder="Masukkan password" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="remember-me" name="remember">
+                    <label for="remember-me">Ingat saya</label>
+                </div>
+
+                <button type="submit" class="btn-submit">Login</button>
+
+                <div id="login-error" class="error-message"></div>
+                <div id="login-loading" class="loading-message" style="display:none;">Sedang login...</div>
+            </form>
+
+            <!-- ===== FORM REGISTER ===== -->
+            <form id="register-form" class="login-tab-content">
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input 
+                        type="text" 
+                        id="register-username" 
+                        name="username" 
+                        placeholder="Pilih username" 
+                        minlength="3"
+                        required
+                    >
+                    <small>Minimal 3 karakter, huruf dan angka saja</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input 
+                        type="email" 
+                        id="register-email" 
+                        name="email" 
+                        placeholder="Masukkan email Anda" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input 
+                        type="password" 
+                        id="register-password" 
+                        name="password" 
+                        placeholder="Minimal 8 karakter, huruf besar, huruf kecil, angka" 
+                        minlength="8"
+                        required
+                    >
+                    <small>Minimal 8 karakter dengan huruf besar, huruf kecil, dan angka</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-confirm">Konfirmasi Password</label>
+                    <input 
+                        type="password" 
+                        id="register-confirm" 
+                        name="confirm_password" 
+                        placeholder="Ketik ulang password" 
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-submit">Daftar</button>
+
+                <div id="register-error" class="error-message"></div>
+                <div id="register-success" class="success-message" style="display:none;">Pendaftaran berhasil! Silakan login.</div>
+                <div id="register-loading" class="loading-message" style="display:none;">Sedang mendaftar...</div>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>Akun demo admin: <strong>admin_herman</strong> / <strong>Admin@123</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

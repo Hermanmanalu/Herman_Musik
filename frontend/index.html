@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Herman Musik – Rental Tenda & Dekorasi Pesta Adat</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <div class="nav-logo">Herman<span>Musik</span></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#layanan">Layanan</a></li>
+    <li><a href="#paket">Paket</a></li>
+    <li><a href="#galeri">Galeri</a></li>
+    <li><a href="#testimoni">Testimoni</a></li>
+    <li><a href="#kontak" class="nav-cta">Pesan Sekarang</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-ornament"></div>
+  <div class="hero-ornament"></div>
+  <div class="hero-ornament"></div>
+  <div>
+    <div class="hero-badge">✦ Rental Tenda & Taratak Pesta ✦</div>
+    <h1 class="hero-title">
+      Pesta Pernikahan<br>
+      <span class="accent">Megah & Berkesan</span>
+    </h1>
+    <p class="hero-sub">
+      Spesialis tenda dan taratak adat Batak& pesta modern. 
+      Lengkap dengan dekorasi, kursi, dan tim pemasangan profesional.
+    </p>
+    <div class="hero-buttons">
+      <a href="#paket" class="btn-primary">Lihat Paket</a>
+      <a href="https://wa.me/6281264026989?text=Halo%20Herman%20Musik%2C%20saya%20mau%20tanya%20rental%20tenda" target="_blank" class="btn-outline">💬 Chat WhatsApp</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">500+</span>
+      <span class="stat-label">Pesta Sukses</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">12+</span>
+      <span class="stat-label">Tahun Pengalaman</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">15</span>
+      <span class="stat-label">Tim Profesional</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">4.9★</span>
+      <span class="stat-label">Rating Pelanggan</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BANNER ADAT ===== -->
+<div class="adat-banner">
+  <p>Kami melayani <strong>Pesta Adat Batak Toba</strong> — taratak dan tenda lengkap dengan dekorasi ulos & ornamen adat sesuai permintaan 🎊</p>
+</div>
+
+<!-- ===== LAYANAN ===== -->
+<section id="layanan">
+  <div class="container">
+    <p class="section-label">✦ Produk Unggulan ✦</p>
+    <h2 class="section-title">Pilihan Tenda & Taratak</h2>
+    <p class="section-desc">Beragam jenis tenda dan taratak berkualitas tinggi untuk memperindah momen spesial Anda.</p>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="produk-grid">
+
+      <div class="produk-card">
+        <span class="produk-badge">⭐ Terlaris</span>
+        <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&q=80" alt="Taratak Batak" class="produk-img"/>
+        <div class="produk-body">
+          <h3 class="produk-name">Taratak Adat Batak</h3>
+          <p class="produk-desc">Taratak khas Batak dengan ornamen ulos dan dekorasi adat lengkap. Cocok untuk pesta adat, marhata sinamot, dan pesta unjuk.</p>
+          <div class="produk-footer">
+            <div class="produk-harga">
+              Rp 750.000/1 set
+              <small>per hari · sudah termasuk pasang</small>
+            </div>
+            <button class="btn-pesan" onclick="openModal('Taratak Adat Batak', 'Rp 750.000/1 set')">Pesan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="produk-card">
+        <img src="https://images.unsplash.com/photo-1478146059778-26028b07395a?w=600&q=80" alt="Tenda Pesta" class="produk-img"/>
+        <div class="produk-body">
+          <h3 class="produk-name">Tenda Pesta Modern</h3>
+          <p class="produk-desc">Tenda besar untuk pesta kecil seperti marhata sinamot, Tardidi, Syukuran, dll. Tersedia ukuran 10x20, 15x30 hingga 20x40 meter. Tahan angin dan hujan.</p>
+          <div class="produk-footer">
+            <div class="produk-harga">
+              Rp 500.000/1 Tenda
+              <small>per hari · sudah termasuk pasang</small>
+            </div>
+            <button class="btn-pesan" onclick="openModal('Tenda Pesta Modern', 'Rp 500.000/1 Tenda')">Pesan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="produk-card">
+        <span class="produk-badge">Eksklusif</span>
+        <img src="https://images.unsplash.com/photo-1550005809-91ad75fb315f?w=600&q=80" alt="Taratak VIP" class="produk-img"/>
+        <div class="produk-body">
+          <h3 class="produk-name">Taratak VIP Premium</h3>
+          <p class="produk-desc">Taratak mewah berlapis kain premium, lampu kristal, backdrop bunga segar. Sempurna untuk resepsi dan foto prewedding.</p>
+          <div class="produk-footer">
+            <div class="produk-harga">
+              Rp 8.500.000
+              <small>per hari · termasuk dekorasi</small>
+            </div>
+            <button class="btn-pesan" onclick="openModal('Taratak VIP Premium', 'Rp 8.500.000/hari')">Pesan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="produk-card">
+        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=80" alt="Kursi Meja" class="produk-img"/>
+        <div class="produk-body">
+          <h3 class="produk-name">Kursi</h3>
+          <p class="produk-desc">Tersedia untuk 100 hingga 500 tamu.</p>
+          <div class="produk-footer">
+            <div class="produk-harga">
+              Rp 4.000/ kursi
+              <small>per kursi/hari · minimum 50 pcs</small>
+            </div>
+            <button class="btn-pesan" onclick="openModal('Kursi', 'Rp 4.000/kursi/hari')">Pesan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="produk-card">
+        <img src="https://images.unsplash.com/photo-1597586124394-fbd6ef244026?w=600&q=80" alt="Sound System" class="produk-img"/>
+        <div class="produk-body">
+          <h3 class="produk-name">Sound System & Lighting</h3>
+          <p class="produk-desc">Paket sound system outdoor dan indoor. Tersedia operator berpengalaman. Cocok untuk hiburan gondang, keyboard, dan DJ.</p>
+          <div class="produk-footer">
+            <div class="produk-harga">
+              Rp 2.000.000
+              <small>per hari · include operator</small>
+            </div>
+            <button class="btn-pesan" onclick="openModal('Sound System & Lighting', 'Rp 2.000.000/hari')">Pesan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="produk-card">
+        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80" alt="Generator" class="produk-img"/>
+        <div class="produk-body">
+          <h3 class="produk-name">Genset & Instalasi Listrik</h3>
+          <p class="produk-desc">Genset silent 10KVA–100KVA untuk menjamin kelancaran pesta Anda. Termasuk operator dan instalasi kabel lengkap.</p>
+          <div class="produk-footer">
+            <div class="produk-harga">
+              Rp 850.000
+              <small>per hari · include BBM 8 jam</small>
+            </div>
+            <button class="btn-pesan" onclick="openModal('Genset & Instalasi Listrik', 'Rp 850.000/hari')">Pesan</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== KEUNGGULAN ===== -->
+<section id="keunggulan">
+  <div class="container">
+    <p class="section-label">✦ Mengapa Kami ✦</p>
+    <h2 class="section-title">Dipercaya Ratusan bahkan ribuan Keluarga</h2>
+    <p class="section-desc">Kami hadir untuk memastikan pesta Anda berjalan sempurna dari awal hingga akhir.</p>
+
+    <div class="keunggulan-grid">
+      <div class="keunggulan-item">
+        <span class="keunggulan-icon">🏆</span>
+        <h3 class="keunggulan-title">12 Tahun Berpengalaman</h3>
+        <p class="keunggulan-desc">Sudah melayani lebih dari 500 acara pesta pernikahan adat dan modern di berbagai daerah.</p>
+      </div>
+      <div class="keunggulan-item">
+        <span class="keunggulan-icon">⚡</span>
+        <h3 class="keunggulan-title">Tim Cepat & Profesional</h3>
+        <p class="keunggulan-desc">Tim berpengalaman kami bisa memasang tenda dalam waktu singkat sesuai jadwal Anda.</p>
+      </div>
+      <div class="keunggulan-item">
+        <span class="keunggulan-icon">🤝</span>
+        <h3 class="keunggulan-title">Harga Transparan</h3>
+        <p class="keunggulan-desc">Tidak ada biaya tersembunyi. Semua harga sudah termasuk pengiriman, pasang, dan bongkar.</p>
+      </div>
+      <div class="keunggulan-item">
+        <span class="keunggulan-icon">🎨</span>
+        <h3 class="keunggulan-title">Dekorasi Adat Lengkap</h3>
+        <p class="keunggulan-desc">Ornamen ulos, kain adat, dan dekorasi bunga bisa disesuaikan dengan adat Anda.</p>
+      </div>
+      <div class="keunggulan-item">
+        <span class="keunggulan-icon">📞</span>
+        <h3 class="keunggulan-title">Siaga 24 Jam</h3>
+        <p class="keunggulan-desc">Tim kami siap dihubungi kapanpun. Ada masalah di hari H, kami langsung ke lokasi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PAKET ===== -->
+<section id="paket">
+  <div class="container">
+    <p class="section-label">✦ Pilihan Paket ✦</p>
+    <h2 class="section-title">Paket Lengkap Pesta Anda</h2>
+    <p class="section-desc">Pilih paket yang sesuai kebutuhan, atau hubungi kami untuk paket custom sesuai budget.</p>
+
+    <div class="paket-grid">
+
+      <div class="paket-card">
+        <h3 class="paket-nama">Paket Buat Nikahan</h3>
+        <div class="paket-harga-wrap">
+          <div class="paket-harga">Rp 9 Juta</div>
+          <div class="paket-harga-note">untuk 800 tamu</div>
+        </div>
+        <ul class="paket-list">
+          <li>Taratak 3 set</li>
+          <li>Tenda pesta ukuran 6×12 meter 2 </li>
+          <li>100 kursi plastik jika diperlukan</li>
+          <li>Sound system basic</li>
+          <li>Genset & Instalasi Listrik</li>
+          <li>Kameramen & Videografer</li>
+          <li>Perabotan Yang digunakan saat acara</li>
+          <li>Tukang masak Nasi lengkap dengan alat alat yang dibutuhkan</li>
+          <li>Pasang & bongkar oleh tim</li>
+        </ul>
+        <button class="btn-paket" onclick="openModal('Paket Buat Nikahan', 'Rp 9.000.000 (800 tamu)')">Pesan Paket Ini</button>
+      </div>
+
+      <div class="paket-card featured">
+        <div class="paket-tag">⭐ Paling Diminati</div>
+        <h3 class="paket-nama">Paket Taratak Adat</h3>
+        <div class="paket-harga-wrap">
+          <div class="paket-harga">Rp 12 Juta</div>
+          <div class="paket-harga-note">untuk 200–300 tamu</div>
+        </div>
+        <ul class="paket-list">
+          <li>Taratak adat Batak/Melayu lengkap</li>
+          <li>200 kursi + 25 meja bundar</li>
+          <li>Dekorasi ulos & ornamen adat</li>
+          <li>Sound system basic + operator</li>
+          <li>Genset + instalasi listrik</li>
+          <li>Lampu hias & backdrop pelaminan</li>
+          <li>Pasang & bongkar oleh tim</li>
+        </ul>
+        <button class="btn-paket" onclick="openModal('Paket Taratak Adat', 'Rp 12.000.000 (200–300 tamu)')">Pesan Paket Ini</button>
+      </div>
+
+      <div class="paket-card">
+        <h3 class="paket-nama">Paket Royal</h3>
+        <div class="paket-harga-wrap">
+          <div class="paket-harga">Rp 25 Juta</div>
+          <div class="paket-harga-note">untuk 400–600 tamu</div>
+        </div>
+        <ul class="paket-list">
+          <li>Taratak VIP premium + tenda besar</li>
+          <li>400 kursi chiavari + 50 meja</li>
+          <li>Dekorasi mewah + bunga segar</li>
+          <li>Sound system lengkap + lighting</li>
+          <li>Genset 50KVA + full instalasi</li>
+          <li>Pelaminan dekorasi premium</li>
+          <li>Karpet merah VIP + backdrop foto</li>
+          <li>Tim on-site sepanjang acara</li>
+        </ul>
+        <button class="btn-paket" onclick="openModal('Paket Royal', 'Rp 25.000.000 (400–600 tamu)')">Pesan Paket Ini</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALERI ===== -->
+<section id="galeri">
+  <div class="container">
+    <p class="section-label">✦ Portofolio ✦</p>
+    <h2 class="section-title">Galeri Dokumentasi</h2>
+    <p class="section-desc">Sebagian dokumentasi acara yang telah kami tangani dengan bangga.</p>
+
+    <div class="galeri-grid">
+      <div class="galeri-item">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" alt="Pesta Pernikahan"/>
+        <div class="galeri-overlay"><div class="galeri-overlay-text">Resepsi Pernikahan Adat</div></div>
+      </div>
+      <div class="galeri-item">
+        <img src="https://images.unsplash.com/photo-1478146059778-26028b07395a?w=400&q=80" alt="Taratak Malam"/>
+        <div class="galeri-overlay"><div class="galeri-overlay-text">Dekorasi Malam Hari</div></div>
+      </div>
+      <div class="galeri-item">
+        <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&q=80" alt="Dekorasi Bunga"/>
+        <div class="galeri-overlay"><div class="galeri-overlay-text">Dekorasi Bunga Segar</div></div>
+      </div>
+      <div class="galeri-item">
+        <img src="https://images.unsplash.com/photo-1550005809-91ad75fb315f?w=400&q=80" alt="Tenda Outdoor"/>
+        <div class="galeri-overlay"><div class="galeri-overlay-text">Tenda Outdoor Premium</div></div>
+      </div>
+      <div class="galeri-item">
+        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80" alt="Pelaminan"/>
+        <div class="galeri-overlay"><div class="galeri-overlay-text">Area Pelaminan VIP</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONI ===== -->
+<section id="testimoni">
+  <div class="container">
+    <p class="section-label">✦ Apa Kata Mereka ✦</p>
+    <h2 class="section-title">Testimoni Pelanggan</h2>
+    <p class="section-desc">Kepercayaan keluarga-keluarga ini adalah motivasi terbesar kami.</p>
+
+    <div class="testi-grid">
+
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Taratak adatnya bagus banget, ornamen ulosnya pas sekali dengan tema adat Batak kami. Tim pemasangannya cepat, datang tepat waktu. Pesta anak kami jadi sangat berkesan!</p>
+        <div class="testi-author">
+          <div class="testi-avatar">S</div>
+          <div>
+            <div class="testi-name">Sintia br. Manurung</div>
+            <div class="testi-lokasi">Medan · Pesta Unjuk 2024</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Kami pakai Paket Royal untuk 500 tamu undangan. Tenda dan dekorasinya mewah, sound systemnya jernih, genset tidak pernah mati. Rekomendasi banget untuk yang mau pesta besar!</p>
+        <div class="testi-author">
+          <div class="testi-avatar">R</div>
+          <div>
+            <div class="testi-name">Robert Simanjuntak</div>
+            <div class="testi-lokasi">Pematang Siantar · Resepsi 2024</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Harga terjangkau tapi kualitasnya tidak murahan. Kursinya bersih, tenda tidak bocor pas hujan. Petugasnya juga ramah dan sigap. Terima kasih Raja Taratak!</p>
+        <div class="testi-author">
+          <div class="testi-avatar">F</div>
+          <div>
+            <div class="testi-name">Fatimah Lubis</div>
+            <div class="testi-lokasi">Padang Sidempuan · Akad Nikah 2023</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CARA PESAN ===== -->
+<section id="cara-pesan">
+  <div class="container">
+    <p class="section-label">✦ Prosedur Pemesanan ✦</p>
+    <h2 class="section-title">Mudah & Cepat Dipesan</h2>
+    <p class="section-desc">Hanya 4 langkah untuk memastikan tenda dan taratak impian Anda siap di hari pesta.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3 class="step-title">Hubungi Kami</h3>
+        <p class="step-desc">Chat WhatsApp atau isi form kontak. Ceritakan tanggal acara, lokasi, dan jumlah tamu.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3 class="step-title">Survey Lokasi</h3>
+        <p class="step-desc">Tim kami datang survey lokasi (gratis) untuk memastikan ukuran dan kebutuhan yang tepat.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3 class="step-title">Konfirmasi & DP</h3>
+        <p class="step-desc">Setujui penawaran dan lakukan DP 30% untuk mengunci tanggal acara Anda.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3 class="step-title">Pesta Siap!</h3>
+        <p class="step-desc">Tim kami tiba H-1 untuk pemasangan. Anda tinggal menikmati hari istimewa bersama keluarga.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== KONTAK ===== -->
+<section id="kontak">
+  <div class="container">
+    <p class="section-label">✦ Hubungi Kami ✦</p>
+    <h2 class="section-title">Konsultasi Gratis</h2>
+
+    <div class="kontak-wrap">
+      <div class="kontak-info">
+        <h3>Kami Siap Melayani Anda</h3>
+        <p>Konsultasikan kebutuhan pesta Anda kepada kami. Tim kami siap membantu dari perencanaan hingga hari pelaksanaan acara.</p>
+
+        <div class="kontak-items">
+          <div class="kontak-item">
+            <div class="kontak-icon">📍</div>
+            <div class="kontak-item-text">
+              <strong>Alamat</strong>
+              <span>Desa Lumban Silintong, Banjar sitolu-tolu, Kec. Pagaran, Kabupaten Tapanuli Utara, Sumatera Utara 22458</span>
+            </div>
+          </div>
+          <div class="kontak-item">
+            <div class="kontak-icon">📞</div>
+            <div class="kontak-item-text">
+              <strong>Telepon / WhatsApp</strong>
+              <a href="tel:+6281234567890">+62 812-6402-6989</a>
+            </div>
+          </div>
+          <div class="kontak-item">
+            <div class="kontak-icon">📧</div>
+            <div class="kontak-item-text">
+              <strong>Email</strong>
+              <a href="mailto:hermanmusik@gmail.com">hermanmusik@gmail.com</a>
+            </div>
+          </div>
+          <div class="kontak-item">
+            <div class="kontak-icon">🕐</div>
+            <div class="kontak-item-text">
+              <strong>Jam Operasional</strong>
+              <span>Kami selalu siap kapanpun di Hubungi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kontak-form">
+        <h3 class="form-title">Kirim Permintaan</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="nama" placeholder="Nama Anda"/>
+          </div>
+          <div class="form-group">
+            <label>No. WhatsApp</label>
+            <input type="tel" id="wa" placeholder="08xx-xxxx-xxxx"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tanggal Acara</label>
+            <input type="date" id="tanggal"/>
+          </div>
+          <div class="form-group">
+            <label>Jumlah Tamu</label>
+            <select id="tamu">
+              <option value="">Pilih Estimasi</option>
+              <option>50–100 tamu</option>
+              <option>100–200 tamu</option>
+              <option>200–400 tamu</option>
+              <option>400–600 tamu</option>
+              <option>600+ tamu</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Jenis Acara</label>
+          <select id="jenis">
+            <option value="">Pilih Jenis Acara</option>
+            <option>Pesta Pernikahan</option>
+            <option>Pesta Unjuk/Namonding</option>
+            <option>Marhata Hepeng/Martuppol</option>
+            <option>Acara Keluarga / Syukuran</option>
+            <option>Acara Perusahaan / Event</option>
+            <option>Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pesan / Keterangan Tambahan</label>
+          <textarea id="pesan" placeholder="Ceritakan kebutuhan Anda (lokasi, tema, dll.)..."></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitForm()">✉️ Kirim via WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-logo">Herman Musik</div>
+  <p class="footer-tagline">✦ Rental Tenda & Taratak Pesta Pernikahan ✦</p>
+  <ul class="footer-links">
+    <li><a href="#layanan">Layanan</a></li>
+    <li><a href="#paket">Paket</a></li>
+    <li><a href="#galeri">Galeri</a></li>
+    <li><a href="#testimoni">Testimoni</a></li>
+    <li><a href="#cara-pesan">Cara Pesan</a></li>
+    <li><a href="#kontak">Kontak</a></li>
+  </ul>
+  <p class="footer-copy">© 2024 Herman Musik. Semua hak dilindungi. | Dibuat dengan ❤️</p>
+</footer>
+
+<!-- ===== WHATSAPP FLOAT ===== -->
+<a href="https://wa.me/6281264026989?text=Halo%20Herman%20Musik%2C%20saya%20mau%20tanya%20soal%20rental%20tenda" target="_blank" class="wa-float" title="Chat WhatsApp">
+  💬
+</a>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 class="modal-title" id="modalTitle">Pesan Sekarang</h2>
+    <p class="modal-sub" id="modalSub">Hubungi kami via WhatsApp untuk konfirmasi ketersediaan dan detail penawaran.</p>
+    <a href="#" id="modalWaBtn" target="_blank" class="modal-wa-btn">
+      💬 Chat WhatsApp Sekarang
+    </a>
+    <p style="text-align:center; color: rgba(255,255,255,0.3); font-size: 0.78rem;">
+      Kami biasanya merespons dalam &lt; 5 menit
+    </p>
+  </div>
+</div>
+
+<!-- ===== NOTIFICATION ===== -->
+<div class="notif" id="notif">✅ Pesan berhasil dikirim via WhatsApp!</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
